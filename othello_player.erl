@@ -47,7 +47,7 @@ eventLoop(Color)->
 		Posibles = get_posibles(Border, [], Board, Color, Color),
 		PosibleMovs = lists:map(fun([_, Pos, _, _]) -> Pos end, Posibles),
 		Answer = [_, Move, _, _] = alpha_beta(Posibles, Color, [-100001, 0, {}, []], Color),
-		io:format("Answer: ~w~n", [Move]),
+		%%io:format("Answer: ~w~n", [Move]),
 		oserver!{move, self(), {Color, Move}},
 		eventLoop(Color);
 	%%Not my turn just print something :P
@@ -84,7 +84,7 @@ value(Node = [_, _, _, Border], Player, Alpha, Beta, Color, Depth) ->
 	Tiempo = ((Mega*1000000+Sec)*1000000+Micro) - Depth,
 	if
 		(Border =:= []) or (Tiempo >= 100000)->
-			io:format("Tiempo: ~w~n", [Tiempo]),
+			%%io:format("Tiempo: ~w~n", [Tiempo]),
 			Node;
 		Player =:= Color ->
 			max_value(Node, Player, Alpha, Beta, Color, Depth);
