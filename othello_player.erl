@@ -43,10 +43,9 @@ heuristics() ->
 eventLoop(Color)->
 	receive
 	%%In case it is my turn do the alpha beta prunning minimax!
-	{your_turn, {_,_,_,_,_,_, Timer, _, Board, Border}} ->
+	{your_turn, {_,_,_,_,_,_, _, _, Board, Border}} ->
 		Posibles = get_posibles(Border, [], Board, Color, Color),
-		PosibleMovs = lists:map(fun([_, Pos, _, _]) -> Pos end, Posibles),
-		Answer = [_, Move, _, _] = alpha_beta(Posibles, Color, [-100001, 0, {}, []], Color),
+		[_, Move, _, _] = alpha_beta(Posibles, Color, [-100001, 0, {}, []], Color),
 		%%io:format("Answer: ~w~n", [Move]),
 		oserver!{move, self(), {Color, Move}},
 		eventLoop(Color);
@@ -58,10 +57,6 @@ eventLoop(Color)->
 	_ -> io:format("unhandled message"),
 		eventLoop(Color)
 	end.
-
-%%Send move order to server
-move(Pos, Color) ->
-	oserver!{move, self(), {Color, Pos}}.
 
 %%Do the alpha beta Initialization
 alpha_beta(Childs, Player, Move = [HeurM, _, _, _], Color) ->
@@ -103,7 +98,7 @@ max_value([_, _, Board, Border], Player, Alpha, Beta, Color, Depth) ->
 calc_value_max(Childs, Player, Alpha, Beta, Color, Depth, V = [HeurV, _, _, _]) ->
 	case Childs of
 		[] -> V;
-		[H|T] -> Node = [Heur, _, _, _] = value(H, change(Player), Alpha, Beta, Color, Depth),
+		[H|T] -> [Heur, _, _, _] = value(H, change(Player), Alpha, Beta, Color, Depth),
 			if Heur >= HeurV ->
 				NewV = H;
 				true -> NewV = V
